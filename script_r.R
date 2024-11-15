@@ -9,6 +9,7 @@ library(tseries)
 library(ConnectednessApproach)
 library(zoo)
 library(kableExtra)
+library(vars)
 
 rets <- read_csv("~/series-wp/exchange_rates_returns.csv")
 vals <- read_csv("~/series-wp/exchange_rates_values.csv")
@@ -90,34 +91,38 @@ results <- data.frame(
 )
 print(results)
 
+ic <- VARselect(zoo_rets, lag.max = 6, type = 'const')
+print(ic)
 # Diebold-Yilmaz
 
 zoo_rets <- zoo(rets[ , -1], order.by = rets$Date)
 zoo_vals <- zoo(vals[ , -1], order.by = rets$Date)
 
 dca <- ConnectednessApproach(zoo_rets,
-                            nlag=4,
-                            nfore=20,
+                            nlag=1,
+                            nfore=10,
                             model='VAR',
                             connectedness='Time',
                             Connectedness_config=list(TimeConnectedness=list(generalized=TRUE)))
 
-dca_vals <- ConnectednessApproach(zoo_vals,
-                            nlag=4,
-                            nfore=20,
-                            model='VAR',
-                            connectedness='Time',
-                            Connectedness_config=list(TimeConnectedness=list(generalized=TRUE)))
 
-kable(dca_vals$TABLE) #tabla
+kable(dca$TABLE) #tabla
 
-PlotTCI(dca_vals)
+dca <- ConnectednessApproach(zoo_rets,
+                             nlag=1,
+                             nfore=10,
+                             window.size=60,
+                             model='VAR',
+                             connectedness='Time',
+                             Connectedness_config=list(TimeConnectedness=list(generalized=TRUE)))
 
-PlotTO(dca_vals)
+PlotTCI(dca)
 
-PlotFROM(dca_vals)
+PlotTO(dca)
 
-PlotNET(dca_vals)
+PlotFROM(dca)
+
+PlotNET(dca)
 
 
 # Matriz de Diebold-Yilmaz
