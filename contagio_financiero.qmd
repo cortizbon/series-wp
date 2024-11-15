@@ -1,0 +1,83 @@
+---
+title: "Contagio financiero a través del Índice de contagio"
+author: "Carlos Ortiz"
+format: pdf
+editor: visual
+fontsize: 10pt
+---
+
+## Resumen
+
+**Palabras clave**:
+
+## Abstract
+
+**Keywords**:
+
+\newpage
+
+## Introducción
+
+
+
+Contexto histórico sobre el mercado financiero
+
+Combinación histórica y estudios sobre el mercado financiero
+
+Relevancia del estudio del contagio financiero y mención a algunas fuentes
+
+Objetivo del proyecto
+
+Estructura
+
+## Revisión de literatura
+
+Mercado bursátil
+
+Contagio financiero
+
+Diebold-Yilmaz
+
+## Datos
+
+Qué datos se van a utilizar
+
+Tabla con la descripción de los datos
+
+## Metodología
+
+Diebold-Yilmaz
+
+Modelo VAR
+
+Modelo DCC-GARCH
+
+DY 2012 y reseña de 2023
+
+Análisis por región
+
+Análisis entre potencias económicas (G8)
+
+Análisis general
+
+Análisis entre cabezas de región
+
+## Resultados
+
+Gráficos
+
+Índices
+
+## Conclusiones
+
+Conclusión sobre lo realizado
+
+Conclusión sobre los hallazgos por región
+
+Conclusión sobre los hallazgos por potencias económicas
+
+Conclusión sobre los hallazgos generales
+
+Conclusión sobre las cabezas de región
+
+Lo que queda por hacer
