@@ -4,8 +4,6 @@ author: "Carlos Ortiz"
 format: pdf
 editor: visual
 fontsize: 10pt
-execute:
-  echo: false
 ---
 
 ```{r}
@@ -36,6 +34,7 @@ rets$Date <- as.Date(rets$Date)
 
 vals_long <- melt(vals, id.vars = "Date", variable.name = "Series", value.name = "Value")
 ```
+
 
 ## Resumen
 
@@ -68,6 +67,7 @@ Contagio financiero
 Diebold-Yilmaz
 
 ## Datos
+
 
 ```{r}
 ggplot(vals_long, aes(x = Date, y = Value)) +
@@ -116,6 +116,7 @@ kable(stats[, c("PEN", "PYG", "UYU")])
 kable(cor(dplyr::select(vals, -c(Date))))
 ```
 
+
 Qué datos se van a utilizar
 
 Tabla con la descripción de los datos
@@ -140,6 +141,7 @@ Análisis entre cabezas de región
 
 ## Resultados
 
+
 ```{r}
 zoo_rets <- zoo(rets[ , -1], order.by = rets$Date)
 zoo_vals <- zoo(vals[ , -1], order.by = rets$Date)
@@ -154,7 +156,9 @@ dca <- ConnectednessApproach(zoo_rets,
 
 kable(dca$TABLE)
 ```
+
 Gráficos
+
 
 ```{r}
 dca <- ConnectednessApproach(zoo_rets,
@@ -165,7 +169,6 @@ dca <- ConnectednessApproach(zoo_rets,
                              connectedness='Time',                  Connectedness_config=list(TimeConnectedness=list(generalized=TRUE)))
 PlotTCI(dca)
 ```
-
 
 ```{r}
 PlotTO(dca)
@@ -178,6 +181,7 @@ PlotFROM(dca)
 ```{r}
 PlotNET(dca)
 ```
+
 Índices
 
 ## Conclusiones
@@ -193,3 +197,4 @@ Conclusión sobre los hallazgos generales
 Conclusión sobre las cabezas de región
 
 Lo que queda por hacer
+
