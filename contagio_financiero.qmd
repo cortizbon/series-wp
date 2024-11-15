@@ -18,8 +18,6 @@ fontsize: 10pt
 
 ## Introducción
 
-
-
 Contexto histórico sobre el mercado financiero
 
 Combinación histórica y estudios sobre el mercado financiero
