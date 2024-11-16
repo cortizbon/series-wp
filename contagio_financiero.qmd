@@ -1,14 +1,18 @@
 ---
-title: "Contagio de volatilidad en tasas de cambio en Latinoamérica"
-author: "Carlos Ortiz"
+title: "¿Mejor dar que recibir? Contagio de retornos en tasas de cambio en Latinoamérica"
+author:
+  name: "Carlos Ortiz"
+  affiliation: "Pontificia Universidad Javeriana"
 format: pdf
 editor: visual
-fontsize: 10pt
+fontsize: 11pt
 execute:
   echo: false
+tbl-cap-location: bottom
+lang: es
 ---
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # leer los datos
 library(readr)
 library(reshape2)
@@ -25,8 +29,8 @@ library(vars)
 rets <- read_csv("~/series-wp/exchange_rates_returns.csv")
 vals <- read_csv("~/series-wp/exchange_rates_values.csv")
 
-rets <- dplyr::select(rets, -c(PAB))
-vals <- dplyr::select(vals, -c(PAB))
+rets <- dplyr::select(rets, -c(PAB, NIO, GTQ, HNL, DOP))
+vals <- dplyr::select(vals, -c(PAB, NIO, GTQ, HNL, DOP))
 
 # graficar los datos
 
@@ -39,63 +43,106 @@ vals_long <- melt(vals, id.vars = "Date", variable.name = "Series", value.name =
 
 ## Resumen
 
-**Palabras clave**:
+A nivel macroeconómico, los países monitorean de cerca una serie de precios clave, como las tasas de interés, los precios de los commodities y las tasas de cambio. Con el aumento de la interconexión entre economías, se vuelve fundamental comprender cómo la información contenida en estos precios se transmite entre países. Aunque existe una amplia literatura sobre el contagio financiero, el contagio de retornos y el contagio de volatilidad, pocos estudios se enfocan en las direcciones de dicho contagio: quién actúa como transmisor y quién como receptor. El objetivo de este documento es contribuir a esta línea de investigación, centrándose en nueve economías de Latinoamérica. Utilizando datos de retornos de tasas de cambio para el período 2010-2024, se calcularon índices de spillovers siguiendo la metodología de Diebold y Yilmaz (2009, 2012). Los resultados indican que el 13.09% de la varianza general del error de pronóstico de las tasas de cambio de la región proviene de choques externos. A nivel de país, esta proporción varía entre el 1% y el 20%. Estos hallazgos revelan una fuerte interconexión entre las tasas de cambio en la región, lo que subraya la necesidad de que los responsables de la política económica consideren estos vínculos al diseñar estrategias para enfrentar los choques externos.
+
+**Palabras clave**: tasa de cambio, spillovers, economías pequeñas
+
+\newpage
 
 ## Abstract
 
-**Keywords**:
+At the macroeconomic level, there are several key prices that countries closely monitor, such as interest rates, commodity prices, and exchange rates. As interconnection between countries deepens, it becomes essential to understand how the information embedded in these prices spreads across economies. Although there is a substantial body of literature on financial contagion, return contagion, and volatility contagion, little attention has been paid to understanding the directions of contagion: who transmits and who receives. The goal of this document is to contribute to this area of research by focusing on nine Latin American economies. Using exchange rate return data for the period 2010–2024, spillover indices were calculated following the methodology of Diebold and Yilmaz (2009, 2012). The results indicate that 13.09% of the general variance of the exchange rate forecast error in the region stems from external shocks. At the country level, this proportion ranges between 1% and 20%. These findings reveal a strong interconnection between exchange rates in the region, highlighting the need for policymakers to consider these linkages when designing strategies to address external shocks.
+
+
+
+
+**Keywords**: exchange rate, spillovers, small economies
 
 \newpage
 
 ## Introducción
 
-Contexto histórico sobre el mercado financiero
+Una parte fundamental de la teoría económica es comprender el comportamiento de los agregados macroeconómicos, cómo estos responden a los precios nacionales e internacionales y las interrelaciones que existen entre ellos. Dentro del conjunto de precios destacan las tasas de interés, el nivel de precios internos, los precios internacionales de los commodities y las tasas de cambio. Este documento se centrará en el análisis de este último componente.
 
-Combinación histórica y estudios sobre el mercado financiero
+En los últimos años, los países han adoptado políticas cambiarias que oscilan entre dos extremos: un mayor control sobre el tipo de cambio o una mayor flexibilidad. Algunos países han optado por mantener fijaciones cambiarias hacia monedas fuertes como el dólar o el euro, ya sea mediante uniones monetarias (como algunos países de África) o mediante la renuncia total a la soberanía monetaria, como en el caso de El Salvador, Panamá o los países de la zona euro. Otros, en contraste, han permitido la flexibilidad cambiaria, dejando que el tipo de cambio fluctúe libremente según las dinámicas del mercado. Este enfoque se observa tanto en países desarrollados (Estados Unidos, Canadá, Reino Unido) como en economías en desarrollo (Latinoamérica y el sudeste asiático).
 
-Relevancia del estudio del contagio financiero y mención a algunas fuentes
+La política cambiaria influye significativamente en el grado de interconexión económica entre los países. Aquellos con tipos de cambio fijos están más expuestos a los eventos económicos del país cuya moneda adoptan, mientras que los países con flexibilidad cambiaria enfrentan choques externos e internos que pueden provenir de otras regiones. En este contexto, los tipos de cambio no solo reflejan fenómenos económicos entre economías, sino que también sirven como canales de transmisión de volatilidad entre ellas. Por ello, resulta esencial analizar cómo los tipos de cambio transmiten información tanto a las economías como entre sí.
 
-Objetivo del proyecto
+La literatura económica ha explorado ampliamente los "spillovers" de volatilidad entre activos (bonos, precios de commodities, acciones, entre otros), países y regiones. Este documento se inspira en los trabajos pioneros de Diebold y Yilmaz (2009), quienes evaluaron los spillovers de retornos y volatilidad en 19 países utilizando un modelo Vector Autorregresivo (VAR). En un estudio posterior, Diebold y Yilmaz (2012) examinan los spillovers entre diferentes tipos de activos, como bonos, acciones y commodities. Investigaciones más recientes incluyen a Chow (2017), quien analizó spillovers entre Estados Unidos, Reino Unido y otros países, y a Nguyen y Le (2018), quienes se enfocaron en Estados Unidos, Japón y Vietnam.
 
-Estructura
+El presente trabajo busca contribuir a la literatura sobre spillovers en tasas de cambio, utilizando el dólar estadounidense como divisa base. El análisis incluye nueve monedas de países latinoamericanos: Argentina (ARS), Brasil (BRL), Chile (CLP), Colombia (COP), Costa Rica (CRC), México (MXN), Paraguay (PYG), Perú (PEN) y Uruguay (UYU) y se calculan los retornos de las tasas de cambio para el período comprendido entre el 4 de enero de 2010 y el 28 de junio de 2024. Este enfoque se alinea con estudios previos sobre spillovers en tasas de cambio, como McMillan y Speight (2010) para retornos, y Couderta, Couhardeb y Mignon (2011) o Bubak, Kocenda y Zikes (2011) para volatilidad. Asimismo, se sigue la línea de trabajos regionales como el de Devpura (2021), quien exploró la interrelación entre tasas de cambio en Asia. 
 
-## Revisión de literatura
+Para alcanzar este objetivo, el documento se estructura en cinco secciones: 1) esta introducción, 2) una descripción de la metodología, 3) una descripción de los datos utilizados, 4) la presentación de los resultados y 5) las conclusiones.
 
-Mercado bursátil
+## Metodología
 
-Contagio financiero
+El objetivo del documento es identificar spillovers de los retornos de la tasa de cambio para 13 países de Latinoamérica. Esto se llevará a cabo empleando la metodología de Diebold & Yilmaz (2009, 2012). Estos autores proponen un índice de spillover calculado a través de la descomposición de la varianza asociada con un Vector Autorregsivo de $n$ variables. La idea es que las descomposiciones de la varianza afectan las varianzas de los errores de pronóstico de cada variable en diferentes choques. Estos valores se agregan para llegar a un único valor denominado "spillover index". En Diebold & Yilmaz (2009) se propúso un índice a partir de una descomposición de Cholesky que dependía del orden de las variables y que no permitía identificar la dirección de los spillovers. Los mismos autores emplearon las funciones de impulso respuesta para evitar el problema del ordenamiento y se construyó la dirección de los spillovers (Diebold & Yilmaz, 2012). Con esto presente, se definen las varianzas propias y las varianzas cruzadas (spillovers). Considere un VAR(p) de N variables covarianza-estacionario.
 
-Diebold-Yilmaz
+$$y_i=\sum_{i=1}^{p}y_{i-1}+v_i$$ donde $v_i\sim(0,\Sigma)$ son errores iid con matriz de varianzas $\Sigma$. Sea $\theta_{ij}$ el paso hacia adelante $h$ de las c
+
+$$\theta_{ij}=\frac{\sum_{k=0}^{h-1}(e_i'A_k\Sigma e_j)^2}{\sigma_{ii}\sum_{k=0}^{h-1}(e_i'A_k\Sigma A_i')}$$
+
+donde $\Sigma$ y $\sigma_{ii}$ es la matriz de varianzas y la desviacíón estándar de los errores. $e_i$ es el vector de selección del cual el $i$-ésimo valor es 1 y el resto son ceros. El índice total de spillover (TCI) se denota como $S$ y se construye como
+
+$$S=\frac{\sum_{ij=1,i\neq j}^N\theta_{ij}^h}{\sum_{i,j=1}^N\theta_{ij}^h}*100$$
+
+donde $\theta_{ij}^h=\frac{\theta_{ij}}{\sum_{j=1}^N\theta_{ij}}$.
+
+\newpage
+
+**Medida de spillover direccional**
+
+En Diebold & Yilmaz (2012) se introducen dos spillovers direccionales conocidos como $desde$ y $hacia$. Los spillovers direccionales recibidos por el mercado $i$ $desde$ el resto de los mercados $j$ son:
+
+$$S_{i.}=\frac{\sum_{j=1,i\neq j}^N\theta_{ij}^h}{\sum_{j=1}^N\theta_{ij}^h}*100$$ 
+
+Los spillovers direccionales transmitidos por el mercado $i$ $hacia$ los otros mercados $j$ son:
+
+$$S_{.i}=\frac{\sum_{j=1,i\neq j}^N\theta_{ji}^h}{\sum_{j=1}^N\theta_{ji}^h}*100$$
+
+**Spillover neto**
+
+El spillover neto puede ser calculado como la direncia entre los spillovers de los retornos transmitidos $hacia$ y recibidos $desde$ todos los otros retornos de tasa de cambio. De esta forma
+
+$$S_i=S_{i.}-S_{.i}$$
+Este último resume la información sobre cuánto en términos netos cada tasa de cambio contribuye a la volatilidad/retornos en otras tasas de cambio.
+
+\newpage
 
 ## Datos
 
-| País                 | Moneda          | ISO |
-|----------------------|-----------------|-----|
-| Argentina            | Peso argentino  | ARS |
-| Brasil               | Real            | BRL |
-| Chile                | Peso chileno    | CLP |
-| Colombia             | Peso colombiano | COP |
-| Costa Rica           | Colón           | CRC |
-| Guatemala            | Quetzal         | GTQ |
-| Honduras             | Lempira         | HNL |
-| México               | Peso mexicano   | MXN |
-| Nicaragua            | Córdoba         | NIO |
-| Paraguay             | Guaraní         | PYG |
-| Perú                 | Sol             | PEN |
-| República Dominicana | Peso dominicano | DOP |
-| Uruguay              | Peso uruguayo   | UYU |
+Los datos cubren el periodo entre el 4 de enero de 2010 y el 28 de junio de 2024. Los datos se obtienen de la API de Yahoo Finance. A continuación se presenta una tabla con las países, las monedas y los ISO respectivos de estas monedas que se emplearán como convención a lo largo del documento.
+
 
 ```{r}
+tabla <- data.frame(
+  País = c("Argentina", "Brasil", "Chile", "Colombia", "Costa Rica", 
+           "México", "Paraguay", "Perú", "Uruguay"),
+  Moneda = c("Peso argentino", "Real", "Peso chileno", "Peso colombiano", 
+             "Colón", "Peso mexicano", "Guaraní", "Sol", "Peso uruguayo"),
+  ISO = c("ARS", "BRL", "CLP", "COP", "CRC", "MXN", "PYG", "PEN", "UYU")
+)
+
+
+kable(tabla, caption='Países, monedas e ISO.')
+```
+
+```{r}
+#| fig-cap: "Series de las tasas de cambio para las nueve economías."
+
 ggplot(vals_long, aes(x = Date, y = Value)) +
   geom_line() +
   facet_wrap(~ Series, nrow = 4, ncol = 4, scales = "free_y") +
   theme_minimal() +
-  labs(title = "Time Series Grid", x = "Date", y = "Value")
+  labs(title = "Tasas de cambio en Latinoamérica", x = "Date", y = "Value")
+
+
 ```
 
+Las tablas a continuación muestran las estadísticas descriptivas univariadas para cada una de las series empleadas en el documento y la matriz de correlación de Pearson para las mismas. Puede observarse en esta última una fuerte correlación entre todas las tasas de cambio. Esto debido al tamaño relativo de las economías frente a la divisa de referencia, la interrelación comercial y financiera de las mismas y la reacción similar frente a choques internacionales. Llama la atención el comportamiento particular de GTQ que guarda una relación negativa con el resto de las denominaciones.
+
 ```{r}
-series_names <- c("ARS", "BRL", "CLP", "COP", "CRC", "DOP",
-                  "GTQ", "HNL", "MXN", "NIO", "PEN", "PYG", "UYU")
+series_names <- c("ARS", "BRL", "CLP", "COP", "CRC", "MXN", "PEN", "PYG", "UYU")
 
 stats <- data.frame(
   Statistic = c("Mean", "St. Desv.", "Min", "Max", "Median", "Skewness", "Kurtosis"),
@@ -104,11 +151,7 @@ stats <- data.frame(
   CLP = c(mean(vals$CLP), sd(vals$CLP), min(vals$CLP), max(vals$CLP), median(vals$CLP), skewness(vals$CLP), kurtosis(vals$CLP)),
   COP = c(mean(vals$COP), sd(vals$COP), min(vals$COP), max(vals$COP), median(vals$COP), skewness(vals$COP), kurtosis(vals$COP)),
   CRC = c(mean(vals$CRC), sd(vals$CRC), min(vals$CRC), max(vals$CRC), median(vals$CRC), skewness(vals$CRC), kurtosis(vals$CRC)),
-  DOP = c(mean(vals$DOP), sd(vals$DOP), min(vals$DOP), max(vals$DOP), median(vals$DOP), skewness(vals$DOP), kurtosis(vals$DOP)),
-  GTQ = c(mean(vals$GTQ), sd(vals$GTQ), min(vals$GTQ), max(vals$GTQ), median(vals$GTQ), skewness(vals$GTQ), kurtosis(vals$GTQ)),
-  HNL = c(mean(vals$HNL), sd(vals$HNL), min(vals$HNL), max(vals$HNL), median(vals$HNL), skewness(vals$HNL), kurtosis(vals$HNL)),
   MXN = c(mean(vals$MXN), sd(vals$MXN), min(vals$MXN), max(vals$MXN), median(vals$MXN), skewness(vals$MXN), kurtosis(vals$MXN)),
-  NIO = c(mean(vals$NIO), sd(vals$NIO), min(vals$NIO), max(vals$NIO), median(vals$NIO), skewness(vals$NIO), kurtosis(vals$NIO)),
   PEN = c(mean(vals$PEN), sd(vals$PEN), min(vals$PEN), max(vals$PEN), median(vals$PEN), skewness(vals$PEN), kurtosis(vals$PEN)),
   PYG = c(mean(vals$PYG), sd(vals$PYG), min(vals$PYG), max(vals$PYG), median(vals$PYG), skewness(vals$PYG), kurtosis(vals$PYG)),
   UYU = c(mean(vals$UYU), sd(vals$UYU), min(vals$UYU), max(vals$UYU), median(vals$UYU), skewness(vals$UYU), kurtosis(vals$UYU))
@@ -119,58 +162,21 @@ stats <- dplyr::select(stats, -c(Statistic))
 
 stats <- round(stats, 2)
 
-kable(stats)
+kable(stats,  
+      caption="Estadísticas descriptivas")
 ```
 
 ```{r}
-kable(stats[, c("DOP", "GTQ", "HNL", "MXN", "NIO")])
+kable(round(cor(dplyr::select(vals, -c(Date))), 2), caption='Correlación de Pearson entre las tasas de cambio')
 ```
 
-```{r}
-kable(stats[, c("PEN", "PYG", "UYU")])
-```
-
-```{r}
-kable(round(cor(dplyr::select(vals, -c(Date))), 2))
-```
-
-Qué datos se van a utilizar
-
-Tabla con la descripción de los datos
-
-## Metodología
-
-El objetivo del documento es identificar spillovers de los retornos de la tasa de cambio para 13 países de Latinoamérica. Esto se llevará a cabo empleando la metodología de Diebold & Yilmaz (2009, 2012). Estos autores proponen un índice de spillover calculado a través de la descomposición de la varianza asociada con un Vector Autorregsivo de $n$ variables. La idea es que las descomposiciones de la varianza afectan las varianzas de los errores de pronóstico de cada variable en diferentes choques. Estos valores se agregan para llegar a un único valor denominado "spillover index". En Diebold & Yilmaz (2009) se propúso un índice a partir de una descomposición de Cholesky que dependía del orden de las variables y que no permitía identificar la dirección de los spillovers. Los mismos autores emplearon las funciones de impulso respuesta para evitar el problema del ordenamiento y se construyó la dirección de los spillovers (Diebold & Yilmaz, 2012). Con esto presente, se definen las varianzas propias y las varianzas cruzadas (spillovers). Considere un VAR(p) de N variables covarianza-estacionario.
-
-$$y_i=\sum_{i=1}^{p}y_{i-1}+v_i$$ donde $v_i\sim(0,\Sigma)$ son errores iid con matriz de varianzas $\Sigma$. Sea $\theta_{ij}$ el paso hacia adelante $h$ de las c
-
-$$\theta_{ij}=\frac{\sum_{k=0}^{h-1}(e_i'A_k\Sigma e_j)^2}{\sigma_{ii}\sum_{k=0}^{h-1}(e_i'A_k\Sigma A_i')}$$
-
-donde $\Sigma$ y $\sigma_{ii}$ es la matriz de varianzas y la desviacíón estándar de los errores. $e_i$ es el vector de selección del cual el $i$-ésimo valor es 1 y el resto son ceros. El índice total de spillover se denota como $S$ y se construye como
-
-$$S=\frac{\sum_{ij=1,i\neq j}^N\theta_{ij}^h}{\sum_{i,j=1}^N\theta_{ij}^h}*100$$
-
-donde $\theta_{ij}^h=\frac{\theta_{ij}}{\sum_{j=1}^N\theta_{ij}}$
-
-**Medida de spillover direccional**
-
-En Diebold & Yilmaz (2012) se introducen dos spillovers direccionales conocidos como $desde$ y $hacia$. Los spillovers direccionales recibidos por el mercado $i$ $desde$ el resto de los mercados $j$ son:
-
-$$S_{i.}=\frac{}{}*100$$ Los spillovers direccionales transmitidos por el mercado $i$ $hacia$ los otros mercados $j$ son:
-
-$$S.i=\frac{}{}*100$$
-
-**Spillover neto**
-
-El spillover neto puede ser calculado como la direncia entre los spillovers de los retornos transmitidos $hacia$ y recibidos $desde$ todos los otros retornos de tasa de cambio. De esta forma
-
-$$S_i=S_{i.}-S_{.i}$$
-
-**Spillover neto**
+\newpage
 
 ## Resultados
 
-```{r}
+En esta sección se presentarán los resultados empezando por la tabla de descomposición de la varianza, seguido de un análisis de la evolución dinámica a través de una exposición gráfica del TCI, los spillovers direccionales $hacia$ y $desde$ para cada uno de los países y, por último, el comportamiento de los spillovers direccionales netos.
+
+```{r echo=FALSE, message=FALSE}
 zoo_rets <- zoo(rets[ , -1], order.by = rets$Date)
 zoo_vals <- zoo(vals[ , -1], order.by = rets$Date)
 
@@ -182,45 +188,159 @@ dca <- ConnectednessApproach(zoo_rets,
                             Connectedness_config=list(TimeConnectedness=list(generalized=TRUE)))
 
 
-kable(dca$TABLE)
+kable(dca$TABLE, caption="Descomposición de la varianza para el modelo VAR estimado",)
 ```
+La anterior tabla reporta los resultados de los spillover de retorno de las tasas de cambio. Cualquier entrada $ij$ en la tabla es la contribución estimada a la varianza del error de pronóstico de cualquier retorno de tasa de cambio $i$ que proviene de choques al retorno de la tasa de cambio $j$. Por ejemplo, el valor de 98.96% que se encuentra en la posición $11$ hace referencia a la contribución a la varianza del error de pronóstico del retorno de ARS debido a los choques sobre su propio retorno. En esta se encuentran las mismas monedas en el mismo orden. Por último se encuentra el TCI de retornos de tasas de cambio que tiene un valor de 13.09%. Esto mide la contribución de los spillovers en las 13 monedas a la varianza total del error de pronóstico.
 
-Gráficos
+En el extremo derecho se encuentran los spillovers direccionales que vienen $desde$ las otras tasas de cambio. CLP, BRL y CRC muestran los valores más altos con 18.86%, 18.29% y 18.27%, respectivamente. La fila que se encuentra después del registro UYU hace referencia a los spillovers direccionales que van $hacia$ las otras tasas de cambio. Los valores más altos en este caso se corresponden con MXN, COP y CLP con valores de 17.95%, 16.82% y 15.88%, respectivamente. Adicionamente, se pueden identificar relacionaes $desde$ y $hacia$ entre países. Por ejemplo, los mayores transmisores de spillovers hacia CRC son UYU y PYG, de PEN es CLP, de COP es MXN y, así mismo, de MXN es COP.
 
-```{r}
+
+```{r echo=FALSE, message=FALSE}
 dca <- ConnectednessApproach(zoo_rets,
                              nlag=1,
                              nfore=10,
-                             window.size=60,
+                             window.size=360,
                              model='VAR',
                              connectedness='Time',                  Connectedness_config=list(TimeConnectedness=list(generalized=TRUE)))
+
+```
+
+### Análisis dinámico de los spillovers
+
+Dado el largo período de análisis, marcado por eventos internacionales significativos y un aumento de las interconexiones económicas y financieras, un único parámetro como el TCI no es suficiente para capturar la dinámica completa. Por ello, se estimaron los spillovers de retorno utilizando una ventana móvil de 360 días, permitiendo observar su variación a lo largo del tiempo.
+
+```{r}
+#| fig-cap: "TCI"
 PlotTCI(dca)
+
 ```
+
+El TCI parte de un valor cercano a 40% y fluctúa entre 10% y 50% pero se mantiene usualmente entre 25% y 40%. Se pueden identificar dos picos: uno en el año 2011 y otro durante el 2019 y el 2020. Estos coinciden con la bonanza de los commodities que favoreció la entrada de divisas a la región a través de la matriz de exportación y el periodo prepandemia, pandemia y pospandemia, caracterizado por fragilidades económicas a nivel internacional y el enfrentamiento bélico entre Rusia y Ucrania.
+
+Hasta el momento solo se ha discutido la dinámica del TCI, no obstante, este no considera la información direccional. Esa información se incluye en los gráficos siguientes, empezando por el Gráfico 2, que contiene el spillover direccional desde la tasa $i$ $hacia$ cada las demás. En la primera columna se puede observar la transmisión de spillovers de las monedas con economías fuertes de la región (ARS, CLP y BRL) al principio del periodo de análisis pero este se fue amilanando hasta entrado el 2011 para reestablecerse con un patrón fluctuante desde el 2018. Durante el periodo de amilanamiento de los spillovers de estas tres monedas, MXN tuvo mayor participación en la transmisión de spillovers y este se mantuvo a lo largo del tiempo seguramente por su cercanía con la economía estadounidense. Por último, es notable el pico conjunto de COP y PEN en el periodo prepandemia, cuyos países mantuvieron un periodo de inestabilidad política durante la época.
 
 ```{r}
-PlotTO(dca)
+#| fig-cap: "Spillovers direccionales de retornos. HACIA"
+PlotTO(dca, ylim=c(0, 100))
 ```
+
+A continuación se muestra la dinámica de los spillovers desde los otros hacia cada uno de los países. En esta se puede observar un comportamiento compartido entre los países del cono sur (ARS, CLP, BRL y UYU) y entre MXN y COP. En general, el gráfico muestra que las tasas de cambio de la región están intensamente interconectadas. No obstante, la recepción de spillovers por parte de ARS es pequeña frente al resto, explicada principalmente por la naturaleza económica de las últimas décadas del país argentino.
 
 ```{r}
-PlotFROM(dca)
+#| fig-cap: "Spillovers direccionales de retornos. DESDE"
+PlotFROM(dca, ylim=c(0, 100))
 ```
+
+Por último, el análisis de spillovers netos permite identificar a los transmisores y receptores netos de spillovers en los retornos de las tasas de cambio. MXN, COP y UYU fueron transmisores netos al principio del período, mientras que BRL, CLP, CRC, PYG y PEN fueron receptores netos. Este comportamiento se estabilizó después de la pandemia, eliminando distinciones claras entre transmisores y receptores.
 
 ```{r}
-PlotNET(dca)
+#| fig-cap: "Spillovers direccionales netos de retornos."
+PlotNET(dca, ylim=c(-100,100))
 ```
-
-Índices
 
 ## Conclusiones
 
-Conclusión sobre lo realizado
+Este documento exploró los spillovers de retorno entre nueve países de América Latina, encontrando un TCI de 13.09%, lo que indica una interconexión baja en términos generales. Algunas monedas, como ARS, presentan dinámicas internas predominantes que influyen en la varianza del error de pronóstico, mientras que otras, como BRL, CRC y CLP, están más interconectadas con el resto.
 
-Conclusión sobre los hallazgos por región
+El análisis dinámico mostró un TCI fluctuante entre el 18% y el 40%, destacando la fuerte interrelación entre las monedas de la región. Durante el período prepandemia, MXN, COP y UYU se identificaron como transmisores netos, mientras que BRL, CLP, CRC, PYG y PEN fueron receptores netos. Sin embargo, estas distinciones se diluyen en la actualidad. Futuras investigaciones podrían ampliar el alcance del análisis mediante la inclusión de más monedas y la adopción de nuevas metodologías derivadas del índice de spillovers.
 
-Conclusión sobre los hallazgos por potencias económicas
+\newpage
 
-Conclusión sobre los hallazgos generales
+## Bibliografía
 
-Conclusión sobre las cabezas de región
+Bubak, V., Kocenda, E., & Zikes, F. (2011). Volatility Transmission in Emerging
+European Foreign Exchange Markets. Journal of Banking and Finance, 35, 2829
+–2841.
 
-Lo que queda por hacer
+Chow, H. K. (2017). Volatility Spillovers and Linkages in Asian Stock
+Markets. Emerging Markets Finance and Trade, 53, 2770 –2781.
+
+Couderta, V., Couhardeb, C., & Mignon, V. (2011). Exchange Rate Volatility across
+Financial Crises. Journal of Banking and Finance, 35, 3010 –3018.
+
+Devpura, N. (2021). Spillover effects of exchange rate returns in selected Asian countries. Bulletin of Monetary Economics and Banking, 24(1), 35–52.
+
+Diebold, F.X., & Yilmaz, K. (2009). Measuring financial Asset Return and Volatility
+Spillovers, With Application to Global Equity Markets. Economic Journal, 119,
+1–14.
+
+Diebold, F.X., & Yilmaz, K. (2012). Better to Give Than to Receive: Predictive
+Directional Measurement of Volatility Spillovers. International Journal of
+forecasting, 28, 57–66.
+
+Kim J. S., & Ryu, D. (2015) Return and Volatility Spillovers and Cojump Behavior
+between the U.S. and Korean Stock Markets. Emerging Markets Finance and
+Trade, 51, 3–17.
+
+Kitamura, Y. (2010). Testing for Intraday Interdependence and Volatility Spillover
+among the Euro, the Pound and the Swiss Franc Markets. Research in
+International Business and Finance, 24, 158-171.
+
+McMillan, D.G., & Speigh, A.E.H. (2010). Return and Volatility Spillovers in Three
+Euro Exchange Rates. Journal of Economics and Business 62, 79–93.
+
+Nguyen, M.K., & Le, D.N. (2018). Return Spillover from the US
+and Japanese Stock Markets to the Vietnamese Stock Market: A
+Frequency-Domain Approach. Emerging Markets Finance and Trade.
+https://doi.org/10.1080/1540496X.2018.1525357
+
+\newpage
+
+## Anexo
+
+```{r echo=FALSE, message=FALSE}
+zoo_alt <- zoo_rets[, c("BRL", "CLP", "COP", "CRC", "MXN", "PEN", "PYG", "UYU")]
+
+dca <- ConnectednessApproach(zoo_alt,
+                            nlag=1,
+                            nfore=10,
+                            model='VAR',
+                            connectedness='Time',
+                            Connectedness_config=list(TimeConnectedness=list(generalized=TRUE)))
+
+
+kable(dca$TABLE, caption="Descomposición de la varianza para el modelo VAR estimado (sin ARS).",)
+```
+
+\newpage
+
+```{r echo=FALSE, message=FALSE}
+dca <- ConnectednessApproach(zoo_alt,
+                             nlag=1,
+                             nfore=10,
+                             window.size=360,
+                             model='VAR',
+                             connectedness='Time',                  Connectedness_config=list(TimeConnectedness=list(generalized=TRUE)))
+
+```
+
+\newpage
+
+```{r}
+#| fig-cap: "TCI (sin ARS)."
+PlotTCI(dca)
+
+
+```
+
+\newpage
+
+```{r}
+#| fig-cap: "Spillovers direccionales de retornos. HACIA (sin ARS)"
+PlotTO(dca, ylim=c(0, 100))
+```
+
+\newpage
+
+```{r}
+#| fig-cap: "Spillovers direccionales de retornos. DESDE (sin ARS)"
+PlotFROM(dca, ylim=c(0, 100))
+```
+
+\newpage
+
+```{r}
+#| fig-cap: "Spillovers direccionales netos de retornos (sin ARS)."
+PlotNET(dca, ylim=c(-100,100))
+mtext("Spillovers direccionales netos de retornos.", side=1, line=5, adj=0.5, cex=0.5)
+```
